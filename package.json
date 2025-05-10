@@ -1,0 +1,38 @@
+{
+  "name": "ember-engine",
+  "version": "0.0.1",
+  "description": "🔥 A modular, TypeScript-powered 2D/3D game engine with DSL-based game logic, debug mode, AI, physics, and multiplayer — written from scratch.",
+  "keywords": [
+    "game-engine",
+    "typescript",
+    "2d",
+    "3d",
+    "dsl",
+    "canvas",
+    "modular",
+    "physics",
+    "ai"
+  ],
+  "author": "Nolly <nolly.berrebi@gmail.com>",
+  "license": "NFE-OSL v1.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "vscode": "^1.22.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "packageManager": "pnpm@10.10.0",
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  }
+}
