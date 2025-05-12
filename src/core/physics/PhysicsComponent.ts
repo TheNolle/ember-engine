@@ -1,19 +1,23 @@
 export class PhysicsComponent {
-	// current speed
 	vx = 0
 	vy = 0
 
-	// physics forces
-	gravity = 980 // px/s²
-	friction = 0.9 // 0 = none, 1 = full stop
+	gravity = 980
+	friction = 0.9
 
-	constructor(opts: Partial<Pick<PhysicsComponent, 'gravity' | 'friction'>> = {}) {
-		if (opts.gravity !== undefined) this.gravity = opts.gravity
-		if (opts.friction !== undefined) this.friction = opts.friction
+	maxVX = 600
+	maxVY = 1000
+
+	constructor(opts: Partial<Pick<PhysicsComponent, 'gravity' | 'friction' | 'maxVX' | 'maxVY'>> = {}) {
+		Object.assign(this, opts)
 	}
 
-	apply(dt: number, obj: { x: number; y: number }): void {
+	apply(dt: number, obj: { x: number; y: number }) {
 		this.vy += this.gravity * dt
+
+		// clamp velocities
+		this.vx = Math.max(-this.maxVX, Math.min(this.vx, this.maxVX))
+		this.vy = Math.max(-this.maxVY, Math.min(this.vy, this.maxVY))
 
 		obj.x += this.vx * dt
 		obj.y += this.vy * dt

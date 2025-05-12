@@ -40,7 +40,7 @@ export class TestScene extends Scene {
 		const speed = 400
 		if (this.input.isDown('right')) this.player.physics.vx += speed * dt
 		if (this.input.isDown('left')) this.player.physics.vx -= speed * dt
-		if (this.input.isDown('up') && this.player.isGrounded) {
+		if (this.input.isPressed('up') && this.player.isGrounded) {
 			this.player.physics.vy = -400
 		}
 
