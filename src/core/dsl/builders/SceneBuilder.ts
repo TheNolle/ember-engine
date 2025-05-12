@@ -2,6 +2,7 @@ import { Scene } from '@core/scene/Scene'
 import { Canvas2DRenderer } from '@core/renderer/Canvas2DRenderer'
 import { InputManager } from '@core/input/InputManager'
 import { Drawable } from '@core/renderer/Drawable'
+import { Viewport } from '@core/renderer/Viewport'
 import { DebugOverlay } from '@core/debug/DebugOverlay'
 
 export class SceneBuilder extends Scene {
@@ -9,6 +10,7 @@ export class SceneBuilder extends Scene {
 	private renderer = new Canvas2DRenderer()
 	private input = new InputManager()
 	private debugEnabled = false
+	private viewport = this.renderer.getViewport()
 	private debug = new DebugOverlay()
 	private logic: ((scene: SceneBuilder) => void) | null = null
 
@@ -28,6 +30,16 @@ export class SceneBuilder extends Scene {
 		this.logic = logic
 	}
 
+	follow(target: { x: number; y: number }) {
+		this.viewport.follow(target)
+		return this
+	}
+
+	setZoom(zoom: number) {
+		this.viewport.setZoom(zoom)
+		return this
+	}
+
 	init(): void {
 		const canvas = document.querySelector('canvas')!
 		this.renderer.init(canvas)
@@ -45,6 +57,7 @@ export class SceneBuilder extends Scene {
 
 	update(dt: number): void {
 		this.input.update()
+		this.viewport.update()
 
 		for (const d of this.drawables) {
 			if (typeof (d as any).update === 'function') {

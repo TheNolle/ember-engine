@@ -30,6 +30,8 @@ defineGame({
 
 			scene.spawn(player1)
 			scene.spawn(player2)
+
+			scene.follow(player1).setZoom(1.5)
 		}
 	}
 })

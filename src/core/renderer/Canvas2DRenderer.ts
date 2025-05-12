@@ -23,6 +23,10 @@ export class Canvas2DRenderer implements Renderer {
 		this.layers.clear()
 	}
 
+	getViewport(): Viewport {
+		return this.viewport
+	}
+
 	add(drawable: Drawable, z = 0): void {
 		if (!this.layers.has(z)) this.layers.set(z, [])
 		this.layers.get(z)!.push(drawable)
