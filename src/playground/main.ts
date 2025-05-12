@@ -8,17 +8,19 @@ const canvas = document.querySelector('canvas')!
 const renderer = new Canvas2DRenderer()
 renderer.init(canvas)
 
-const objects = [
-	new Rect(50, 50, 100, 100, 'red'),
-	new Circle(200, 150, 50, 'blue'),
-	new Line(300, 100, 400, 200, 'green', 3),
-	new Text(500, 100, 'Hello Ember!', { color: 'white', font: '20px monospace', align: 'left' })
-]
+// Add objects to different layers (lower number = further back)
+renderer.add(new Rect(50, 50, 100, 100, 'red'), 1)
+renderer.add(new Circle(200, 150, 50, 'blue'), 2)
+renderer.add(new Line(300, 100, 400, 200, 'green', 3), 3)
+renderer.add(new Text(500, 100, 'Hello Ember!', {
+	color: 'white',
+	font: '20px monospace',
+	align: 'left'
+}), 4)
 
 function loop() {
 	renderer.clear()
-	const ctx = (canvas.getContext('2d') as CanvasRenderingContext2D)
-	objects.forEach(obj => obj.draw(ctx))
+	renderer.render()
 	requestAnimationFrame(loop)
 }
 

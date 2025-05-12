@@ -1,8 +1,12 @@
 import { Renderer } from './Renderer'
+import { Viewport } from './Viewport'
+import { Drawable } from './Drawable'
 
 export class Canvas2DRenderer implements Renderer {
 	private ctx!: CanvasRenderingContext2D
 	private canvas!: HTMLCanvasElement
+	private viewport = new Viewport()
+	private layers: Map<number, Drawable[]> = new Map()
 
 	init(canvas: HTMLCanvasElement): void {
 		const ctx = canvas.getContext('2d')
@@ -15,9 +19,27 @@ export class Canvas2DRenderer implements Renderer {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 	}
 
+	resetLayers(): void {
+		this.layers.clear()
+	}
+
+	add(drawable: Drawable, z = 0): void {
+		if (!this.layers.has(z)) this.layers.set(z, [])
+		this.layers.get(z)!.push(drawable)
+	}
+
 	render(): void {
-		// Temporary debug fill
-		this.ctx.fillStyle = 'black'
-		this.ctx.fillRect(10, 10, 32, 32)
+		this.ctx.save()
+		this.ctx.scale(this.viewport.zoom, this.viewport.zoom)
+		this.ctx.translate(-this.viewport.x, -this.viewport.y)
+
+		const zSorted = [...this.layers.entries()].sort(([a], [b]) => a - b)
+		for (const [, drawables] of zSorted) {
+			for (const drawable of drawables) {
+				drawable.draw(this.ctx)
+			}
+		}
+
+		this.ctx.restore()
 	}
 }
