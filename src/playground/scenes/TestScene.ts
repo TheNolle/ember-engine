@@ -1,3 +1,4 @@
+import { InputManager } from '@core/input/InputManager'
 import { Scene } from '@core/scene/Scene'
 import { Canvas2DRenderer } from '@core/renderer/Canvas2DRenderer'
 import { Rect } from '@core/renderer/shapes/Rect'
@@ -5,6 +6,7 @@ import { Player } from '../objects/Player'
 
 export class TestScene extends Scene {
 	private renderer = new Canvas2DRenderer()
+	private input = new InputManager()
 	private player = new Player()
 	private playerShape = new Rect(this.player.x, this.player.y, this.player.width, this.player.height, 'cyan')
 
@@ -15,8 +17,15 @@ export class TestScene extends Scene {
 	}
 
 	update(dt: number): void {
-		this.player.x += dt * 60
+		this.input.update()
+
+		if (this.input.isDown('ArrowRight')) this.player.x += dt * 100
+		if (this.input.isDown('ArrowLeft')) this.player.x -= dt * 100
+		if (this.input.isDown('ArrowUp')) this.player.y -= dt * 100
+		if (this.input.isDown('ArrowDown')) this.player.y += dt * 100
+
 		this.playerShape.x = this.player.x
+		this.playerShape.y = this.player.y
 	}
 
 	render(): void {
@@ -25,5 +34,6 @@ export class TestScene extends Scene {
 	}
 
 	dispose(): void {
+		this.input.dispose()
 	}
 }
