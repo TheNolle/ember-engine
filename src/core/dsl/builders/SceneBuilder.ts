@@ -82,12 +82,10 @@ export class SceneBuilder extends Scene {
 
 		const objects = this.drawables.filter(d => d instanceof ObjectBuilder) as ObjectBuilder[]
 
-		// 1. Run updates (controls, etc.)
-		for (const obj of objects) {
-			obj.update?.(dt)
-		}
+		// 1. Run updates
+		for (const obj of objects) obj.update?.(dt)
 
-		// 2. Collisions
+		// 2. Collisions (floor/ground only)
 		for (const obj of objects) {
 			obj.isGrounded = false
 			if (!obj.physics) continue
@@ -96,51 +94,33 @@ export class SceneBuilder extends Scene {
 				if (obj === other || !other.hasTag('ground')) continue
 				if (!aabb(obj, other)) continue
 
-				// Vertical landing
-				const willLand = obj.physics.vy >= 0 &&
+				const landing = obj.physics.vy >= 0 &&
 					obj.y + obj.height <= other.y + 4 &&
 					obj.y + obj.height + obj.physics.vy * dt >= other.y
 
-				if (willLand) {
+				if (landing) {
 					obj.y = other.y - obj.height
 					obj.physics.vy = 0
 					obj.isGrounded = true
-					continue
-				}
-
-				// Horizontal left
-				if (obj.physics.vx > 0 && obj.x + obj.width > other.x && obj.x < other.x) {
-					obj.x = other.x - obj.width
-					obj.physics.vx = 0
-				}
-
-				// Horizontal right
-				if (obj.physics.vx < 0 && obj.x < other.x + other.width && obj.x + obj.width > other.x + other.width) {
-					obj.x = other.x + other.width
-					obj.physics.vx = 0
 				}
 			}
 		}
 
-		// 3. Handle custom collision callbacks
+		// 3. Custom collision callbacks
 		for (const obj of objects) {
 			if (obj.collider) obj.collider.check(obj, objects)
 		}
 
-		// 4. Update debug info
+		// 4. Debug update
 		if (this.debugEnabled) {
-			this.debug.update(dt, objects
-				.filter(obj => obj.hasTag('player'))
-				.map(p => ({
-					x: p.x, y: p.y,
-					vx: p.physics?.vx ?? 0,
-					vy: p.physics?.vy ?? 0,
-					isGrounded: p.isGrounded
-				}))
-			)
+			this.debug.update(dt, objects.filter(o => o.hasTag('player')).map(p => ({
+				x: p.x, y: p.y,
+				vx: p.physics?.vx ?? 0,
+				vy: p.physics?.vy ?? 0,
+				isGrounded: p.isGrounded
+			})))
 		}
 
-		// 5. Update camera
 		this.viewport.update()
 	}
 

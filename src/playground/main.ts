@@ -7,19 +7,19 @@ defineGame({
 	scenes: {
 		Main: scene => {
 			scene.enableDebug()
-			const player1: PlayerBuilder = new PlayerBuilder()
+
+			const player1 = new PlayerBuilder()
 				.at(110, 90)
 				.size(48, 48)
 				.tag('player', 'player1')
 				.withCollider()
-				.onCollide('player2', () => console.log('Player1 collided with Player2'))
 				.withControls({ left: 'a', right: 'd', up: 'w', down: 's' })
 				.withAction('up', _ => movePlayer(player1, 'up'))
 				.withAction('down', _ => movePlayer(player1, 'down'))
 				.withAction('left', dt => movePlayer(player1, 'left', dt))
 				.withAction('right', dt => movePlayer(player1, 'right', dt))
 
-			const player2: PlayerBuilder = new PlayerBuilder()
+			const player2 = new PlayerBuilder()
 				.at(200, 110)
 				.size(48, 48)
 				.tag('player', 'player2')
@@ -32,9 +32,7 @@ defineGame({
 
 			scene.spawn(player1)
 			scene.spawn(player2)
-
 			scene.follow(player1).setZoom(1)
-
 			scene.spawnGround(0, 400, 1200, 40)
 		}
 	}
