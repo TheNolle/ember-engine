@@ -1,4 +1,4 @@
-type Action = string
+export type Action = string
 
 export class InputManager {
 	private keysDown: Set<string> = new Set()
@@ -27,6 +27,14 @@ export class InputManager {
 	isDown(action: Action): boolean {
 		const key = this.getKey(action)
 		return !!key && this.keysDown.has(key)
+	}
+
+	getPressedActions(): string[] {
+		const actions: string[] = []
+		for (const [action, key] of this.bindings.entries()) {
+			if (this.keysPressed.has(key)) actions.push(action)
+		}
+		return actions
 	}
 
 	isPressed(action: Action): boolean {

@@ -1,6 +1,6 @@
 # 🔥 Ember Engine
 
-> A fully modular TypeScript-powered game engine supporting 2D + 3D graphics, NPCs, physics, AI, multiplayer, and DSL-based game definitions — all with ultra-detailed error handling and debug mode.
+> A fully modular TypeScript-powered game engine supporting 2D + 3D graphics, NPCs, physics, AI, multiplayer, and DSL-based game definitions — and debug mode.
 
 ## 🚀 Features
 
@@ -30,7 +30,7 @@ defineGame({
 
 ## 📚 Documentation
 
-> Check the full API & concepts in [/docs](./docs)
+> Coming Soon
 
 ## 🛠️ Contributing
 

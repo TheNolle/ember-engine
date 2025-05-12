@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid'
+import { PhysicsComponent } from '@core/physics/PhysicsComponent'
 
 export abstract class GameObject {
 	id: string
@@ -7,6 +8,7 @@ export abstract class GameObject {
 	width: number
 	height: number
 	tags: Set<string> = new Set()
+	physics?: PhysicsComponent
 
 	constructor({
 		id,
