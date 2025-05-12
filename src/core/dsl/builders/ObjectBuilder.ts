@@ -1,7 +1,10 @@
 import { GameObject } from '@core/game/GameObject'
 import { PhysicsComponent } from '@core/physics/PhysicsComponent'
+import { Drawable } from '@core/renderer/Drawable'
 
-export class ObjectBuilder extends GameObject {
+export class ObjectBuilder extends GameObject implements Drawable {
+	private _color = 'white'
+
 	constructor() {
 		super()
 	}
@@ -26,5 +29,26 @@ export class ObjectBuilder extends GameObject {
 	withPhysics(opts: Partial<PhysicsComponent> = {}) {
 		this.physics = new PhysicsComponent(opts)
 		return this
+	}
+
+	withCollider(): this {
+		this.addCollider()
+		return this
+	}
+
+	onCollide(tag: string, callback: (other: GameObject) => void): this {
+		if (!this.collider) this.addCollider()
+		this.collider!.on(tag, callback)
+		return this
+	}
+
+	color(color: string) {
+		this._color = color
+		return this
+	}
+
+	draw(ctx: CanvasRenderingContext2D): void {
+		ctx.fillStyle = this._color
+		ctx.fillRect(this.x, this.y, this.width, this.height)
 	}
 }

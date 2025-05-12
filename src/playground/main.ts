@@ -11,9 +11,12 @@ defineGame({
 				.at(110, 90)
 				.size(48, 48)
 				.tag('player1')
+				.tag('player')
+				.withPhysics()
+				.withCollider()
+				.onCollide('player2', () => console.log('Player1 collided with Player2'))
 				.withControls({ left: 'a', right: 'd', jump: 'w', fall: 's' })
 				.withAction('jump', _ => movePlayer(player1, 'up'))
-				.withAction('fall', _ => movePlayer(player1, 'down'))
 				.withAction('left', dt => movePlayer(player1, 'left', dt))
 				.withAction('right', dt => movePlayer(player1, 'right', dt))
 
@@ -21,17 +24,20 @@ defineGame({
 				.at(200, 110)
 				.size(48, 48)
 				.tag('player2')
+				.tag('player')
 				.withPhysics()
+				.withCollider()
 				.withControls({ left: 'ArrowLeft', right: 'ArrowRight', jump: 'ArrowUp', fall: 'ArrowDown' })
 				.withAction('jump', _ => movePlayer(player2, 'up'))
-				.withAction('fall', _ => movePlayer(player2, 'down'))
 				.withAction('left', dt => movePlayer(player2, 'left', dt))
 				.withAction('right', dt => movePlayer(player2, 'right', dt))
 
 			scene.spawn(player1)
 			scene.spawn(player2)
 
-			scene.follow(player1).setZoom(1.5)
+			scene.follow(player1).setZoom(1)
+
+			scene.spawnGround(0, 400, 1200, 40)
 		}
 	}
 })

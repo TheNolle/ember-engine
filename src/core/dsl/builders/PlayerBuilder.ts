@@ -21,19 +21,19 @@ export class PlayerBuilder extends ObjectBuilder implements Drawable {
 	}
 
 	update(dt: number) {
-		this.input.update()
+		this.runUpdate(dt)
+		this.input?.update?.()
 
-		for (const action of Object.keys(this.actionHandlers)) {
-			if (this.input.isDown(action) || this.input.isPressed(action)) {
-				this.actionHandlers[action]?.(dt)
+		if ((this as any).actionHandlers) {
+			for (const action of Object.keys((this as any).actionHandlers)) {
+				if (this.input!.isDown(action) || this.input!.isPressed(action)) {
+					(this as any).actionHandlers[action]?.(dt)
+				}
 			}
 		}
 
 		if (this.physics) {
 			this.physics.apply(dt, this)
-		} else {
-			this.x += 0
-			this.y += 0
 		}
 	}
 
