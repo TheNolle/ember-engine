@@ -1,44 +1,59 @@
-import { defineGame, DSLContext } from '@core/dsl'
+import { defineGame, DSLContext, CollectibleBuilder, createSceneSwitcher, GlobalSceneManager } from '@core/dsl'
 import { GameLoop } from '@core/runtime/GameLoop'
-import { SceneManager } from '@core/scene/SceneManager'
 import { PlayerBuilder } from '@core/dsl/builders/PlayerBuilder'
+
+const player = new PlayerBuilder()
+	.size(48, 48)
+	.tag('player')
+	.withCollider()
+	.withControls({ left: 'a', right: 'd', up: 'w', down: 's' })
+	.withAction('up', _ => movePlayer(player, 'up'))
+	.withAction('down', _ => movePlayer(player, 'down'))
+	.withAction('left', dt => movePlayer(player, 'left', dt))
+	.withAction('right', dt => movePlayer(player, 'right', dt))
 
 defineGame({
 	scenes: {
 		Main: scene => {
 			scene.enableDebug()
+			scene.spawnPoint(100, 90)
+			scene.addOnce(player)
+			scene.follow(player).setZoom(1)
 
-			const player1 = new PlayerBuilder()
-				.at(110, 90)
-				.size(48, 48)
-				.tag('player', 'player1')
-				.withCollider()
-				.withControls({ left: 'a', right: 'd', up: 'w', down: 's' })
-				.withAction('up', _ => movePlayer(player1, 'up'))
-				.withAction('down', _ => movePlayer(player1, 'down'))
-				.withAction('left', dt => movePlayer(player1, 'left', dt))
-				.withAction('right', dt => movePlayer(player1, 'right', dt))
+			if (!scene.getAll('coin').length) {
+				const coin = new CollectibleBuilder()
+					.at(300, 300)
+					.size(24, 24)
+					.tag('coin')
+					.color('gold')
+					.onCollect(p => console.log(`${p.id} collected!`))
+					.respawnable({ time: 2000 })
+				scene.spawn(coin)
+			} else {
+				(scene.getAll('coin')[0] as CollectibleBuilder).reset()
+			}
 
-			const player2 = new PlayerBuilder()
-				.at(200, 110)
-				.size(48, 48)
-				.tag('player', 'player2')
-				.withPhysics()
-				.withCollider()
-				.withControls({ left: 'ArrowLeft', right: 'ArrowRight', jump: 'ArrowUp' })
-				.withAction('jump', _ => movePlayer(player2, 'up'))
-				.withAction('left', dt => movePlayer(player2, 'left', dt))
-				.withAction('right', dt => movePlayer(player2, 'right', dt))
+			const switchBox = createSceneSwitcher('Other').at(500, 352)
+			scene.spawn(switchBox)
 
-			scene.spawn(player1)
-			scene.spawn(player2)
-			scene.follow(player1).setZoom(1)
+			scene.spawnGround(0, 400, 1200, 40)
+		},
+
+		Other: scene => {
+			scene.enableDebug()
+			scene.spawnPoint(120, 90)
+			scene.addOnce(player)
+			scene.follow(player).setZoom(1)
+
+			const switchBox = createSceneSwitcher('Main').at(400, 352)
+			scene.spawn(switchBox)
+
 			scene.spawnGround(0, 400, 1200, 40)
 		}
 	}
 })
 
-const movePlayer = (player: PlayerBuilder, direction: 'up' | 'down' | 'left' | 'right', dt?: number) => {
+function movePlayer(player: PlayerBuilder, direction: 'up' | 'down' | 'left' | 'right', dt?: number) {
 	switch (direction) {
 		case 'up': return player.physics ? player.physics.vy = -400 : player.y -= 400 * (dt ?? 0.016)
 		case 'down': return player.physics ? player.physics.vy = 400 : player.y += 400 * (dt ?? 0.016)
@@ -47,12 +62,14 @@ const movePlayer = (player: PlayerBuilder, direction: 'up' | 'down' | 'left' | '
 	}
 }
 
-const manager = new SceneManager()
-manager.set(DSLContext.getScene('Main')!)
+GlobalSceneManager.set(DSLContext.getScene('Main')!)
 
 const loop = new GameLoop()
-loop.start(dt => manager.update(dt), dt => {
-	const canvas = document.querySelector('canvas')!
-	const ctx = canvas.getContext('2d')!
-	manager.render(ctx)
-})
+loop.start(
+	dt => GlobalSceneManager.update(dt),
+	dt => {
+		const canvas = document.querySelector('canvas')!
+		const ctx = canvas.getContext('2d')!
+		GlobalSceneManager.render(ctx)
+	}
+)

@@ -16,8 +16,17 @@ export class SceneBuilder extends Scene {
 	private debug = new DebugOverlay()
 	private logic: ((scene: SceneBuilder) => void) | null = null
 
+	private _spawnX?: number
+	private _spawnY?: number
+
 	constructor(public name: string) {
 		super()
+	}
+
+	spawnPoint(x: number, y: number) {
+		this._spawnX = x
+		this._spawnY = y
+		return this
 	}
 
 	enableDebug() {
@@ -26,6 +35,12 @@ export class SceneBuilder extends Scene {
 
 	spawn(obj: Drawable) {
 		this.drawables.push(obj)
+	}
+
+	addOnce(obj: Drawable): void {
+		if (!this.drawables.includes(obj)) {
+			this.spawn(obj)
+		}
 	}
 
 	define(logic: (scene: SceneBuilder) => void) {
@@ -48,14 +63,14 @@ export class SceneBuilder extends Scene {
 		) as ObjectBuilder[]
 	}
 
-	spawnGround(x: number, y: number, width: number, height: number) {
+	spawnGround(x: number, y: number, width: number, height: number, color?: string) {
 		const ground = new ObjectBuilder()
 			.at(x, y)
 			.size(width, height)
 			.tag('ground')
 			.withCollider()
 
-		const visual = new Rect(x, y, width, height, 'gray')
+		const visual = new Rect(x, y, width, height, color ?? 'gray')
 
 		this.spawn(ground)
 		this.spawn(visual)
@@ -73,6 +88,16 @@ export class SceneBuilder extends Scene {
 		})
 
 		if (this.logic) this.logic(this)
+
+		if (this._spawnX == null || this._spawnY == null) {
+			throw new Error(`[Scene] Missing spawnPoint() for scene '${this.name}'`)
+		}
+		const player = this.getAll('player')[0]
+		if (player) {
+			player.x = this._spawnX
+			player.y = this._spawnY
+		}
+
 		this.drawables.forEach(d => this.renderer.add(d))
 		if (this.debugEnabled) this.renderer.add(this.debug, 999)
 	}

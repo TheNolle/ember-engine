@@ -24,7 +24,7 @@ export class GameLoop {
 		let dt = (time - this.lastTime) / 1000
 		this.lastTime = time
 
-		dt = Math.min(dt, 0.1)
+		if (dt > 0.1) dt = 0.016
 
 		this.updateFn?.(dt)
 		this.renderFn?.(dt)

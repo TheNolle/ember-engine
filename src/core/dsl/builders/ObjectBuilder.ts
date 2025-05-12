@@ -6,6 +6,9 @@ export class ObjectBuilder extends GameObject implements Drawable {
 	private _color = 'white'
 	private _visible = true
 
+	private initialX = 0
+	private initialY = 0
+
 	constructor() {
 		super()
 	}
@@ -13,6 +16,14 @@ export class ObjectBuilder extends GameObject implements Drawable {
 	at(x: number, y: number) {
 		this.x = x
 		this.y = y
+		this.initialX = x
+		this.initialY = y
+		return this
+	}
+
+	resetPosition() {
+		this.x = this.initialX
+		this.y = this.initialY
 		return this
 	}
 
@@ -60,6 +71,15 @@ export class ObjectBuilder extends GameObject implements Drawable {
 	enable() {
 		this._visible = true
 		return this
+	}
+
+	setVisible(visible: boolean) {
+		this._visible = visible
+		return this
+	}
+
+	getVisible() {
+		return this._visible
 	}
 
 	update(dt: number) {
