@@ -1,19 +1,22 @@
 import { Scene } from '@core/scene/Scene'
 import { Canvas2DRenderer } from '@core/renderer/Canvas2DRenderer'
 import { Rect } from '@core/renderer/shapes/Rect'
+import { Player } from '../objects/Player'
 
 export class TestScene extends Scene {
 	private renderer = new Canvas2DRenderer()
-	private objects = [new Rect(100, 100, 100, 100, 'lime')]
+	private player = new Player()
+	private playerShape = new Rect(this.player.x, this.player.y, this.player.width, this.player.height, 'cyan')
 
 	init(): void {
 		const canvas = document.querySelector('canvas')!
 		this.renderer.init(canvas)
-		this.objects.forEach(obj => this.renderer.add(obj))
+		this.renderer.add(this.playerShape)
 	}
 
 	update(dt: number): void {
-		this.objects[0].x += dt * 100
+		this.player.x += dt * 60
+		this.playerShape.x = this.player.x
 	}
 
 	render(): void {

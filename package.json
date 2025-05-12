@@ -36,5 +36,8 @@
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "vite-tsconfig-paths": "^5.1.4"
+  },
+  "dependencies": {
+    "nanoid": "^5.1.5"
   }
 }
