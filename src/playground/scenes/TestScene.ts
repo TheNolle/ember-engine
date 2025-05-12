@@ -14,15 +14,20 @@ export class TestScene extends Scene {
 		const canvas = document.querySelector('canvas')!
 		this.renderer.init(canvas)
 		this.renderer.add(this.playerShape)
+
+		this.input.bind('left', 'ArrowLeft')
+		this.input.bind('right', 'ArrowRight')
+		this.input.bind('up', 'ArrowUp')
+		this.input.bind('down', 'ArrowDown')
 	}
 
 	update(dt: number): void {
 		this.input.update()
 
-		if (this.input.isDown('ArrowRight')) this.player.x += dt * 100
-		if (this.input.isDown('ArrowLeft')) this.player.x -= dt * 100
-		if (this.input.isDown('ArrowUp')) this.player.y -= dt * 100
-		if (this.input.isDown('ArrowDown')) this.player.y += dt * 100
+		if (this.input.isDown('right')) this.player.x += dt * 100
+		if (this.input.isDown('left')) this.player.x -= dt * 100
+		if (this.input.isDown('up')) this.player.y -= dt * 100
+		if (this.input.isDown('down')) this.player.y += dt * 100
 
 		this.playerShape.x = this.player.x
 		this.playerShape.y = this.player.y
