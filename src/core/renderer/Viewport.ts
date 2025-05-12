@@ -3,6 +3,9 @@ export class Viewport {
 	y = 0
 	zoom = 1
 
+	private followTarget?: { x: number; y: number }
+	private followLag = 0.15
+
 	moveTo(x: number, y: number) {
 		this.x = x
 		this.y = y
@@ -15,5 +18,18 @@ export class Viewport {
 
 	setZoom(zoom: number) {
 		this.zoom = zoom
+	}
+
+	follow(target: { x: number; y: number }, lag = 0.15) {
+		this.followTarget = target
+		this.followLag = lag
+	}
+
+	update() {
+		if (!this.followTarget) return
+		const centerX = this.followTarget.x - window.innerWidth / 2 / this.zoom + 24
+		const centerY = this.followTarget.y - window.innerHeight / 2 / this.zoom + 24
+		this.x += (centerX - this.x) * this.followLag
+		this.y += (centerY - this.y) * this.followLag
 	}
 }

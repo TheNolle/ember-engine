@@ -35,6 +35,7 @@ export class TestScene extends Scene {
 		this.renderer.add(this.floorShape, 0)
 		this.renderer.add(this.playerShape)
 		if (this.debugMode) this.renderer.add(this.debug, 999)
+		this.renderer['viewport'].follow(this.player)
 
 		this.input.bind('left', 'ArrowLeft')
 		this.input.bind('right', 'ArrowRight')
@@ -87,6 +88,7 @@ export class TestScene extends Scene {
 		this.renderer.add(this.floorShape, 0)
 		this.renderer.add(this.playerShape, 1)
 		if (this.debugMode) this.renderer.add(this.debug, 999)
+		this.renderer['viewport'].update()
 
 		this.renderer.render()
 	}
