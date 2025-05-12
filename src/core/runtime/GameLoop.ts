@@ -21,8 +21,10 @@ export class GameLoop {
 	private loop = (time: number) => {
 		if (!this.running) return
 
-		const dt = (time - this.lastTime) / 1000
+		let dt = (time - this.lastTime) / 1000
 		this.lastTime = time
+
+		dt = Math.min(dt, 0.1)
 
 		this.updateFn?.(dt)
 		this.renderFn?.(dt)

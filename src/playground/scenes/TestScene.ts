@@ -41,15 +41,6 @@ export class TestScene extends Scene {
 		canvas.height = window.innerHeight
 	}
 
-	private bindResize(canvas: HTMLCanvasElement) {
-		const resizeCanvas = () => {
-			canvas.width = window.innerWidth
-			canvas.height = window.innerHeight
-		}
-		window.addEventListener('resize', resizeCanvas)
-		resizeCanvas()
-	}
-
 	update(dt: number): void {
 		const speed = 400
 		if (this.input.isDown('right')) this.player.physics.vx += speed * dt
@@ -76,8 +67,11 @@ export class TestScene extends Scene {
 
 	render(): void {
 		this.renderer.clear()
+
+		this.renderer.resetLayers()
 		this.renderer.add(this.floorShape, 0)
 		this.renderer.add(this.playerShape, 1)
+
 		this.renderer.render()
 	}
 
