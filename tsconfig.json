@@ -9,9 +9,7 @@
     "outDir": "dist",
     "baseUrl": "./src",
     "paths": {
-      "@core/*": ["core/*"],
-      "@game/*": ["game/*"],
-      "@errors/*": ["errors/*"]
+      "@core/*": ["core/*"]
     },
     "esModuleInterop": true,
     "skipLibCheck": true,
