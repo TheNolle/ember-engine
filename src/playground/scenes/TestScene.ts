@@ -25,18 +25,32 @@ export class TestScene extends Scene {
 		const canvas = document.querySelector('canvas')!
 		this.renderer.init(canvas)
 
+		this.resizeCanvas(canvas)
+		window.addEventListener('resize', () => this.resizeCanvas(canvas))
+
 		this.renderer.add(this.floorShape, 0)
 		this.renderer.add(this.playerShape)
 
 		this.input.bind('left', 'ArrowLeft')
 		this.input.bind('right', 'ArrowRight')
 		this.input.bind('up', 'ArrowUp')
-		this.input.bind('down', 'ArrowDown')
+	}
+
+	private resizeCanvas(canvas: HTMLCanvasElement) {
+		canvas.width = window.innerWidth
+		canvas.height = window.innerHeight
+	}
+
+	private bindResize(canvas: HTMLCanvasElement) {
+		const resizeCanvas = () => {
+			canvas.width = window.innerWidth
+			canvas.height = window.innerHeight
+		}
+		window.addEventListener('resize', resizeCanvas)
+		resizeCanvas()
 	}
 
 	update(dt: number): void {
-		this.input.update()
-
 		const speed = 400
 		if (this.input.isDown('right')) this.player.physics.vx += speed * dt
 		if (this.input.isDown('left')) this.player.physics.vx -= speed * dt
@@ -46,7 +60,6 @@ export class TestScene extends Scene {
 
 		this.player.physics.apply(dt, this.player)
 
-		// Ground collision
 		if (aabb(this.player, this.floor)) {
 			this.player.y = this.floor.y - this.player.height
 			this.player.physics.vy = 0
@@ -57,10 +70,14 @@ export class TestScene extends Scene {
 
 		this.playerShape.x = this.player.x
 		this.playerShape.y = this.player.y
+
+		this.input.update()
 	}
 
 	render(): void {
 		this.renderer.clear()
+		this.renderer.add(this.floorShape, 0)
+		this.renderer.add(this.playerShape, 1)
 		this.renderer.render()
 	}
 
