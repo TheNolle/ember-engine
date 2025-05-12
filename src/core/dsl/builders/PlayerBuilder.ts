@@ -22,23 +22,19 @@ export class PlayerBuilder extends ObjectBuilder implements Drawable {
 
 	update(dt: number) {
 		this.runUpdate(dt)
-		this.input?.update?.()
+		this.input?.update()
 
-		if ((this as any).actionHandlers) {
-			for (const action of Object.keys((this as any).actionHandlers)) {
-				if (this.input!.isDown(action) || this.input!.isPressed(action)) {
-					(this as any).actionHandlers[action]?.(dt)
-				}
+		for (const action of Object.keys(this.actionHandlers)) {
+			if (this.input.isDown(action) || this.input.isPressed(action)) {
+				this.actionHandlers[action]?.(dt)
 			}
 		}
 
-		if (this.physics) {
-			this.physics.apply(dt, this)
-		}
+		super.update(dt)
 	}
 
 	draw(ctx: CanvasRenderingContext2D): void {
-		ctx.fillStyle = 'cyan'
+		ctx.fillStyle = this.getColor()
 		ctx.fillRect(this.x, this.y, this.width, this.height)
 	}
 }

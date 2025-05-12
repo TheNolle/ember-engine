@@ -82,51 +82,39 @@ export class SceneBuilder extends Scene {
 
 		const objects = this.drawables.filter(d => d instanceof ObjectBuilder) as ObjectBuilder[]
 
-		for (const d of this.drawables) {
-			if (typeof (d as any).update === 'function') {
-				(d as any).update(dt)
-			}
+		// 1. Run updates (controls, etc.)
+		for (const obj of objects) {
+			obj.update?.(dt)
 		}
 
+		// 2. Collisions
 		for (const obj of objects) {
-			if (obj.collider) {
-				obj.collider.check(obj, objects)
-			}
-		}
-
-		for (const obj of objects) {
-			obj.isGrounded = objects.some(other =>
-				other !== obj &&
-				other.hasTag('ground') &&
-				aabb(obj, other) &&
-				obj.y + obj.height <= other.y + 10
-			)
-		}
-
-		for (const obj of objects) {
+			obj.isGrounded = false
 			if (!obj.physics) continue
 
 			for (const other of objects) {
 				if (obj === other || !other.hasTag('ground')) continue
 				if (!aabb(obj, other)) continue
 
-				const verticalOverlap = obj.y + obj.height - other.y
-				const horizontalOverlap = obj.x + obj.width - other.x
+				// Vertical landing
+				const willLand = obj.physics.vy >= 0 &&
+					obj.y + obj.height <= other.y + 4 &&
+					obj.y + obj.height + obj.physics.vy * dt >= other.y
 
-				if (
-					obj.physics.vy > 0 &&
-					obj.y + obj.height <= other.y + 10
-				) {
+				if (willLand) {
 					obj.y = other.y - obj.height
 					obj.physics.vy = 0
 					obj.isGrounded = true
 					continue
 				}
 
+				// Horizontal left
 				if (obj.physics.vx > 0 && obj.x + obj.width > other.x && obj.x < other.x) {
 					obj.x = other.x - obj.width
 					obj.physics.vx = 0
 				}
+
+				// Horizontal right
 				if (obj.physics.vx < 0 && obj.x < other.x + other.width && obj.x + obj.width > other.x + other.width) {
 					obj.x = other.x + other.width
 					obj.physics.vx = 0
@@ -134,11 +122,25 @@ export class SceneBuilder extends Scene {
 			}
 		}
 
-
-		if (this.debugEnabled) {
-			this.debug.update(dt, objects.filter(obj => obj.hasTag('player')).map(p => ({ x: p.x, y: p.y, vx: p.physics?.vx!, vy: p.physics?.vy!, isGrounded: p.isGrounded })))
+		// 3. Handle custom collision callbacks
+		for (const obj of objects) {
+			if (obj.collider) obj.collider.check(obj, objects)
 		}
 
+		// 4. Update debug info
+		if (this.debugEnabled) {
+			this.debug.update(dt, objects
+				.filter(obj => obj.hasTag('player'))
+				.map(p => ({
+					x: p.x, y: p.y,
+					vx: p.physics?.vx ?? 0,
+					vy: p.physics?.vy ?? 0,
+					isGrounded: p.isGrounded
+				}))
+			)
+		}
+
+		// 5. Update camera
 		this.viewport.update()
 	}
 

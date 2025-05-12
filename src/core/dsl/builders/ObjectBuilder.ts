@@ -4,6 +4,7 @@ import { Drawable } from '@core/renderer/Drawable'
 
 export class ObjectBuilder extends GameObject implements Drawable {
 	private _color = 'white'
+	private _visible = true
 
 	constructor() {
 		super()
@@ -21,8 +22,8 @@ export class ObjectBuilder extends GameObject implements Drawable {
 		return this
 	}
 
-	tag(tag: string) {
-		this.addTag(tag)
+	tag(...tags: string[]) {
+		for (const tag of tags) this.addTag(tag)
 		return this
 	}
 
@@ -47,7 +48,27 @@ export class ObjectBuilder extends GameObject implements Drawable {
 		return this
 	}
 
+	getColor() {
+		return this._color
+	}
+
+	disable() {
+		this._visible = false
+		return this
+	}
+
+	enable() {
+		this._visible = true
+		return this
+	}
+
+	update(dt: number) {
+		this.runUpdate(dt)
+		if (this.physics) this.physics.apply(dt, this)
+	}
+
 	draw(ctx: CanvasRenderingContext2D): void {
+		if (!this._visible) return
 		ctx.fillStyle = this._color
 		ctx.fillRect(this.x, this.y, this.width, this.height)
 	}

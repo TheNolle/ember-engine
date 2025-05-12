@@ -6,7 +6,7 @@ export class DebugOverlay extends Drawable {
 	private lastTime = performance.now()
 
 	private fpsLine = ''
-	private infoLine = ''
+	private infoLines: string[] = []
 
 	update(dt: number, players: Array<{ x: number; y: number; vx: number; vy: number; isGrounded: boolean }>) {
 		const now = performance.now()
@@ -18,8 +18,16 @@ export class DebugOverlay extends Drawable {
 		}
 
 		this.fpsLine = `🖥️ FPS: ${this.fps}`
-		this.infoLine = players.map((p, i) => `P${i + 1}: (${p.x.toFixed(1)}, ${p.y.toFixed(1)}) | V(${p.vx.toFixed(1)}, ${p.vy.toFixed(1)}) | G:${p.isGrounded}`).join('  |  ')
-		this.infoLine += ` | Players: ${players.length}`
+		this.infoLines = [
+			`Players: ${players.length}`,
+			...players.map((player, index) => {
+				return `Player ${index + 1}:\n` +
+					`  Position: (${player.x.toFixed(1)}, ${player.y.toFixed(1)})` +
+					`  Velocity: (${player?.vx?.toFixed(1) ?? '0.0'}, ${player?.vy?.toFixed(1) ?? '0.0'})` +
+					`  Grounded: ${player.isGrounded ? 'Yes' : 'No'}` +
+					`  Has Physics: ${!player.vx && !player.vy ? 'No' : 'Yes'}`
+			})
+		]
 	}
 
 
@@ -28,6 +36,6 @@ export class DebugOverlay extends Drawable {
 		ctx.fillStyle = 'lime'
 		ctx.textAlign = 'left'
 		ctx.fillText(this.fpsLine, 10, 20)
-		ctx.fillText(this.infoLine, 10, 40)
+		this.infoLines.forEach(line => ctx.fillText(line, 10, 40 + this.infoLines.indexOf(line) * 20))
 	}
 }

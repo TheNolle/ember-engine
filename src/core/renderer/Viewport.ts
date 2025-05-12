@@ -27,8 +27,8 @@ export class Viewport {
 
 	update() {
 		if (!this.followTarget) return
-		const centerX = this.followTarget.x - window.innerWidth / 2 / this.zoom + 24
-		const centerY = this.followTarget.y - window.innerHeight / 2 / this.zoom + 24
+		const centerX = this.followTarget.x - window.innerWidth / 2 / this.zoom
+		const centerY = this.followTarget.y - window.innerHeight / 2 / this.zoom
 		this.x += (centerX - this.x) * this.followLag
 		this.y += (centerY - this.y) * this.followLag
 	}
