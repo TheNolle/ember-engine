@@ -4,7 +4,7 @@ import { PhysicsComponent } from '@core/physics/PhysicsComponent'
 export class Player extends GameObject {
 	physics = new PhysicsComponent({
 		gravity: 750,
-		friction: 0.9,
+		friction: 0.99,
 		maxVX: 500,
 		maxVY: 1000
 	})

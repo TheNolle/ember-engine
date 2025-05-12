@@ -4,6 +4,7 @@ import { InputManager } from '@core/input/InputManager'
 import { Scene } from '@core/scene/Scene'
 import { Canvas2DRenderer } from '@core/renderer/Canvas2DRenderer'
 import { Rect } from '@core/renderer/shapes/Rect'
+import { DebugOverlay } from '@core/debug/DebugOverlay'
 import { Player } from '../objects/Player'
 
 export class TestScene extends Scene {
@@ -15,11 +16,14 @@ export class TestScene extends Scene {
 
 	private floor = new class extends GameObject {
 		constructor() {
-			super({ id: 'floor', x: 0, y: 600, width: 1280, height: 40 })
+			super({ id: 'floor', x: 0, y: 800, width: 1920, height: 40 })
 			this.addTag('solid')
 		}
 	}
 	private floorShape = new Rect(this.floor.x, this.floor.y, this.floor.width, this.floor.height, 'gray')
+
+	private debug = new DebugOverlay()
+	private debugMode = true
 
 	init(): void {
 		const canvas = document.querySelector('canvas')!
@@ -30,6 +34,7 @@ export class TestScene extends Scene {
 
 		this.renderer.add(this.floorShape, 0)
 		this.renderer.add(this.playerShape)
+		if (this.debugMode) this.renderer.add(this.debug, 999)
 
 		this.input.bind('left', 'ArrowLeft')
 		this.input.bind('right', 'ArrowRight')
@@ -42,6 +47,16 @@ export class TestScene extends Scene {
 	}
 
 	update(dt: number): void {
+		if (this.debugMode) {
+			this.debug.update(dt, {
+				x: this.player.x,
+				y: this.player.y,
+				vx: this.player.physics.vx,
+				vy: this.player.physics.vy,
+				isGrounded: this.player.isGrounded
+			})
+		}
+
 		const speed = 400
 		if (this.input.isDown('right')) this.player.physics.vx += speed * dt
 		if (this.input.isDown('left')) this.player.physics.vx -= speed * dt
@@ -71,6 +86,7 @@ export class TestScene extends Scene {
 		this.renderer.resetLayers()
 		this.renderer.add(this.floorShape, 0)
 		this.renderer.add(this.playerShape, 1)
+		if (this.debugMode) this.renderer.add(this.debug, 999)
 
 		this.renderer.render()
 	}
