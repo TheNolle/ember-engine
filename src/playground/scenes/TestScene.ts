@@ -24,10 +24,13 @@ export class TestScene extends Scene {
 	update(dt: number): void {
 		this.input.update()
 
-		if (this.input.isDown('right')) this.player.x += dt * 100
-		if (this.input.isDown('left')) this.player.x -= dt * 100
-		if (this.input.isDown('up')) this.player.y -= dt * 100
-		if (this.input.isDown('down')) this.player.y += dt * 100
+		const speed = 400
+		if (this.input.isDown('right')) this.player.physics.vx += speed * dt
+		if (this.input.isDown('left')) this.player.physics.vx -= speed * dt
+		if (this.input.isDown('up')) this.player.physics.vy -= speed * dt
+		if (this.input.isDown('down')) this.player.physics.vy += speed * dt
+
+		this.player.physics.apply(dt, this.player)
 
 		this.playerShape.x = this.player.x
 		this.playerShape.y = this.player.y
